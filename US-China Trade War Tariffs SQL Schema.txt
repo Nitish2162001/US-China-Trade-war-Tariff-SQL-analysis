@@ -1,0 +1,204 @@
+-- COUNTRY TABLE
+CREATE TABLE Country (
+    country_id INT PRIMARY KEY AUTO_INCREMENT,
+    country_name VARCHAR(100) NOT NULL
+);
+
+-- GOODS TABLE
+CREATE TABLE Goods (
+    goods_id INT PRIMARY KEY AUTO_INCREMENT,
+    goods_name VARCHAR(100) NOT NULL
+);
+
+-- EVENT TABLE (e.g., announcements, tariff implementations)
+CREATE TABLE TariffEvent (
+    event_id INT PRIMARY KEY AUTO_INCREMENT,
+    event_date DATE NOT NULL,
+    description TEXT,
+    source_country_id INT,
+    target_country_id INT,
+    FOREIGN KEY (source_country_id) REFERENCES Country(country_id),
+    FOREIGN KEY (target_country_id) REFERENCES Country(country_id)
+);
+
+-- TARIFF TABLE (applied rates on goods due to events)
+CREATE TABLE Tariff (
+    tariff_id INT PRIMARY KEY AUTO_INCREMENT,
+    event_id INT,
+    goods_id INT,
+    rate DECIMAL(5,2), -- e.g., 25.00 for 25%
+    effective_date DATE NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES TariffEvent(event_id),
+    FOREIGN KEY (goods_id) REFERENCES Goods(goods_id)
+); 
+
+INSERT INTO Country (country_id, country_name) VALUES (1, 'United States');
+INSERT INTO Country (country_id, country_name) VALUES (2, 'China');
+
+
+INSERT INTO Goods (goods_id, goods_name) VALUES 
+(1, 'All Chinese goods'),
+(2, 'All US goods'),
+(3, 'Crude oil'),
+(4, 'Agricultural machinery'),
+(5, 'Coal and LNG'),
+(6, 'Steel and aluminum'),
+(7, 'Automobiles'),
+(8, 'Agricultural products'),
+(9, 'Auto parts');
+
+-- Event 1
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (1, '2025-02-01', 'Trump signs executive order to impose 10% tariffs on China.', 1, 2);
+
+-- Event 2
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (2, '2025-02-04', '10% tariffs on all Chinese imports come into effect.', 1, 2);
+
+-- Event 3
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (3, '2025-02-04', 'China imposes 15% tariffs on US coal and LNG, 10% on crude oil and agricultural machinery.', 2, 1);
+
+-- Event 4
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (4, '2025-02-10', '25% tariffs on steel and aluminum imports from all countries.', 1, 2);
+
+-- Event 5
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (5, '2025-03-04', 'Additional 10% tariff on China.', 1, 2);
+
+-- Event 6
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (6, '2025-03-04', 'China counters with 10 to 15% tariffs on US agricultural products.', 2, 1);
+
+-- Event 7
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (7, '2025-03-12', '25% steel and aluminum tariffs take effect.', 1, 2);
+
+-- Event 8
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (8, '2025-03-26', 'Trump announces 25% tariffs on automobiles.', 1, 2);
+
+-- Event 9
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (9, '2025-04-02', 'Trump announces “reciprocal” tariffs and 10% universal tariff.', 1, 2);
+
+-- Event 10
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (10, '2025-04-03', '25% tariffs on cars come into effect.', 1, 2);
+
+-- Event 11
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (11, '2025-04-04', 'China announces a 34% tariff on US goods.', 2, 1);
+
+-- Event 12
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (12, '2025-04-05', '10% universal tariff goes into effect, China total at 30%.', 1, 2);
+
+-- Event 13
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (13, '2025-04-09', 'Trump hits China with an additional 84% levy.', 1, 2);
+
+-- Event 14
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (14, '2025-04-09', 'China retaliates with 84% on US goods.', 2, 1);
+
+-- Event 15
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (15, '2025-04-09', 'Trump raises tariff to 145% on Chinese imports.', 1, 2);
+
+-- Event 16
+INSERT INTO TariffEvent (event_id, event_date, description, source_country_id, target_country_id)
+VALUES (16, '2025-04-11', 'China raises retaliatory tariffs on US imports to 125%.', 2, 1);
+
+-- Event 1: Trump signs executive order to impose 10% tariffs on China
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(1, 1, 10.00, '2025-02-04');  -- All Chinese goods
+
+-- Event 2: US imposes 10% tariff on all Chinese goods
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(2, 1, 10.00, '2025-02-04');
+
+-- Event 3: China retaliates with 15% on coal/LNG, 10% on crude oil and agri machinery
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(3, 2, 10.00, '2025-02-10'),  -- Crude oil and agri machinery
+(3, 3, 15.00, '2025-02-10');  -- Coal and LNG
+
+-- Event 4: US levies 25% on steel & aluminum
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(4, 4, 25.00, '2025-02-10');  -- Steel and aluminum
+
+-- Event 5: US imposes additional 10% on all Chinese goods
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(5, 1, 20.00, '2025-03-04');  -- All Chinese goods (was 10%, now total 20%)
+
+-- Event 6: China counters with 10–15% on US agricultural products
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(6, 2, 10.00, '2025-03-10'),  -- Crude oil and agri machinery
+(6, 3, 15.00, '2025-03-10'),  -- Coal and LNG
+(6, 6, 15.00, '2025-03-10');  -- Agricultural products
+
+-- Event 7: US confirms 25% on steel/aluminum and 20% on all Chinese goods
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(7, 4, 25.00, '2025-03-12'),  -- Steel and aluminum
+(7, 1, 20.00, '2025-03-12');  -- All Chinese goods
+
+-- Event 8: US announces 25% tariff on automobiles
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(8, 5, 25.00, '2025-04-03');  -- Automobiles
+
+-- Event 10: Tariff on cars (automobiles) becomes effective
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(10, 5, 25.00, '2025-04-03');
+
+-- Event 11: China announces 34% on US goods + other existing rates
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(11, 2, 10.00, '2025-04-10'),  -- Crude oil and agri machinery
+(11, 3, 15.00, '2025-04-10'),  -- Coal and LNG
+(11, 6, 15.00, '2025-04-10'),  -- Agricultural products
+(11, 7, 34.00, '2025-04-10');  -- All US goods
+
+-- Event 12: US universal tariff brings China total to 30%
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(12, 1, 30.00, '2025-04-05');  -- All Chinese goods
+
+-- Event 13: US hits China with 84% more, total 104%
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(13, 1, 104.00, '2025-04-09'),  -- All Chinese goods
+(13, 4, 25.00, '2025-04-09'),   -- Steel and aluminum
+(13, 5, 25.00, '2025-04-09');   -- Automobiles
+
+-- Event 14: China retaliates with 84% total on US goods
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(14, 2, 10.00, '2025-04-09'),
+(14, 3, 15.00, '2025-04-09'),
+(14, 6, 15.00, '2025-04-09'),
+(14, 7, 84.00, '2025-04-09');
+
+-- Event 15: US raises China tariffs to 145%
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(15, 1, 145.00, '2025-04-09'),
+(15, 4, 25.00, '2025-04-09'),
+(15, 5, 25.00, '2025-04-09');
+
+-- Event 16: China raises retaliatory tariffs to 125%
+INSERT INTO Tariff (event_id, goods_id, rate, effective_date)
+VALUES 
+(16, 2, 10.00, '2025-04-11'),
+(16, 3, 15.00, '2025-04-11'),
+(16, 6, 15.00, '2025-04-11'),
+(16, 7, 125.00, '2025-04-11');

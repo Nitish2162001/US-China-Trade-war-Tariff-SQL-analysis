@@ -1,0 +1,46 @@
+1) Which country imposed the most tariffs on "Automobiles"?
+
+SELECT c.country_name, COUNT(*) AS num_tariffs
+FROM Tariff t
+JOIN TariffEvent te ON t.event_id = te.event_id
+JOIN Goods g ON t.goods_id = g.goods_id
+JOIN Country c ON te.source_country_id = c.country_id
+WHERE g.goods_name = 'Automobiles'
+GROUP BY c.country_name
+ORDER BY num_tariffs DESC
+LIMIT 1;
+
+2)  Find the maximum tariff rate imposed on "All Chinese goods" by the United States across all events ?
+
+SELECT MAX(t.rate) AS max_tariff_rate
+FROM Tariff t
+JOIN TariffEvent te ON t.event_id = te.event_id
+JOIN Goods g ON t.goods_id = g.goods_id
+WHERE g.goods_name = 'All Chinese goods'
+  AND te.source_country_id = 1  -- United States;
+
+3) How many distinct goods had tariffs imposed by China on the United States as of April 9, 2025?
+
+SELECT COUNT(DISTINCT g.goods_name) AS num_goods
+FROM Tariff t
+JOIN TariffEvent te ON t.event_id = te.event_id
+JOIN Goods g ON t.goods_id = g.goods_id
+WHERE te.source_country_id = 2  -- China
+  AND te.target_country_id = 1  -- United States
+  AND t.effective_date <= '2025-04-09';
+
+4) Find the list of events where the tariff rate was 25% or higher ?
+
+SELECT te.event_date, te.description, g.goods_name, t.rate
+FROM Tariff t
+JOIN TariffEvent te ON t.event_id = te.event_id
+JOIN Goods g ON t.goods_id = g.goods_id
+WHERE t.rate >= 25.00;
+
+
+5) Find the average tariff rate imposed per month ?
+
+SELECT MONTH(t.effective_date) AS month, ROUND(AVG(t.rate), 2) AS avg_rate
+FROM Tariff t
+GROUP BY MONTH(t.effective_date)
+ORDER BY month;
